@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { config } from "../config.js";
+import { config } from "../index.js";
 
 export function handlerMetrics(req: Request, res: Response) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -7,7 +7,7 @@ export function handlerMetrics(req: Request, res: Response) {
         <html>
             <body>
                 <h1>Welcome, Chirpy Admin</h1>
-                <p>Chirpy has been visited ${config.fileserverHits} times!</p>
+                <p>Chirpy has been visited ${config.APIConfig.fileserverHits} times!</p>
             </body>
         </html>
     `);

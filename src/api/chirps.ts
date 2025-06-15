@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { respondWithError, respondWithJson } from "./json.js";
-import { BadRequestError, errorHandler } from "./error.js";
+import { respondWithJson } from "./json.js";
+import { BadRequestError } from "./error.js";
 
 export async function handlerChirpsValidate(req: Request, res: Response, next: NextFunction) {
     type parameters = {

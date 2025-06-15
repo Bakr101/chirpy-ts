@@ -7,11 +7,34 @@ import { handlerReset } from "./api/reset.js";
 import { handlerChirpsValidate } from "./api/chirps.js";
 import { respondWithError } from "./api/json.js";
 import { errorHandler } from "./api/error.js";
+import type { Config } from "./config.js";
+import { envOrThrow } from "./utils.js";
+import process from "node:process";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import postgres from "postgres";
+
+process.loadEnvFile();
+const dbURL = envOrThrow("DB_URL");
+
+export const config: Config = {
+    APIConfig: {
+        fileserverHits: 0,
+    },
+    DBConfig: {
+        dbURL,
+        migrations: {
+            migrationsFolder: "./src/db/migrations",
+        },
+    },
+}
+
+const migrationClient = postgres(config.DBConfig.dbURL, { max: 1 });
+await migrate(drizzle(migrationClient), config.DBConfig.migrations);
+
+
 const app = express();
 const PORT = 8080;
-
-
-
 // express endpoints
 app.use(middlewareLogResponse);
 app.use(express.json());
