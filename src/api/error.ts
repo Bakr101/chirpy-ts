@@ -18,7 +18,7 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
             respondWithError(res, 404, err.message)
             break;
         default:
-            respondWithError(res, 500, "Something went wrong on our end")
+            respondWithError(res, 500, `Something went wrong on our end: ${err.message}`)
             break;
     }
 }

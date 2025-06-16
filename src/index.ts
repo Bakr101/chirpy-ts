@@ -4,30 +4,16 @@ import { handlerReadiness } from "./api/readiness.js";
 import { middlewareLogResponse, middlewareMetricsInc } from "./api/middleware.js";
 import { handlerMetrics } from "./api/metrics.js";
 import { handlerReset } from "./api/reset.js";
-import { handlerChirpsValidate } from "./api/chirps.js";
+import { handlerCreateChirp, handlerGetChirps, handlerGetChirp } from "./api/chirps.js";
+import { handlerLogin, handlerUserCreate } from "./api/users.js";
 import { respondWithError } from "./api/json.js";
 import { errorHandler } from "./api/error.js";
-import type { Config } from "./config.js";
-import { envOrThrow } from "./utils.js";
-import process from "node:process";
+import { config } from "./config.js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
-process.loadEnvFile();
-const dbURL = envOrThrow("DB_URL");
 
-export const config: Config = {
-    APIConfig: {
-        fileserverHits: 0,
-    },
-    DBConfig: {
-        dbURL,
-        migrations: {
-            migrationsFolder: "./src/db/migrations",
-        },
-    },
-}
 
 const migrationClient = postgres(config.DBConfig.dbURL, { max: 1 });
 await migrate(drizzle(migrationClient), config.DBConfig.migrations);
@@ -53,13 +39,43 @@ app.get("/api/healthz", async (req, res, next) => {
         next(error);
     }
 });
-app.post("/api/validate_chirp", async (req, res, next) => {
+app.get("/api/chirps", async (req, res, next) => {
     try {
-        await handlerChirpsValidate(req, res, next);
+        await handlerGetChirps(req, res);
     } catch (error) {
         next(error);
     }
 });
+
+app.get("/api/chirps/:chirpID", async (req, res, next) => {
+    try {
+        await handlerGetChirp(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
+app.post("/api/chirps", async (req, res, next) => {
+    try {
+        await handlerCreateChirp(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
+app.post("/api/users", async (req, res, next) => {
+    try {
+        await handlerUserCreate(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
+app.post("/api/login", async (req, res, next) => {
+    try {
+        await handlerLogin(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
+
 app.post("/admin/reset", handlerReset);
 app.get("/admin/metrics", handlerMetrics);
 app.use(errorHandler)

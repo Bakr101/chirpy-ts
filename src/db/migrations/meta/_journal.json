@@ -8,6 +8,34 @@
       "when": 1749993868167,
       "tag": "0000_lovely_wrecking_crew",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1750062501566,
+      "tag": "0001_magical_excalibur",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1750063682216,
+      "tag": "0002_far_giant_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1750064501900,
+      "tag": "0003_volatile_prowler",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1750068665500,
+      "tag": "0004_fresh_pride",
+      "breakpoints": true
     }
   ]
 }

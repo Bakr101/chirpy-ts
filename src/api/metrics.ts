@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { config } from "../index.js";
+import { config } from "../config.js";
 
 export function handlerMetrics(req: Request, res: Response) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");

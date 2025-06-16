@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { config } from "../index.js";
+import { config } from "../config.js";
 
 
 export function middlewareLogResponse(req: Request, res: Response, next: NextFunction) {
