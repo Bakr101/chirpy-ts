@@ -12,16 +12,22 @@ type DBConfig = {
 export type APIConfig = {
     fileserverHits: number;
     platform: string;
+    jwtSecret: string;
+    polkaAPIKey: string;
 }
 
 process.loadEnvFile();
 const dbURL = envOrThrow("DB_URL");
 const platform = envOrThrow("PLATFORM");
+const jwtSecret = envOrThrow("SECRET");
+const polkaAPIKey = envOrThrow("POLKA_KEY");
 
 export const config: Config = {
     APIConfig: {
         fileserverHits: 0,
         platform,
+        jwtSecret,
+        polkaAPIKey,
     },
     DBConfig: {
         dbURL,

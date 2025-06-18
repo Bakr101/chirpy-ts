@@ -4,14 +4,16 @@ import { handlerReadiness } from "./api/readiness.js";
 import { middlewareLogResponse, middlewareMetricsInc } from "./api/middleware.js";
 import { handlerMetrics } from "./api/metrics.js";
 import { handlerReset } from "./api/reset.js";
-import { handlerCreateChirp, handlerGetChirps, handlerGetChirp } from "./api/chirps.js";
-import { handlerLogin, handlerUserCreate } from "./api/users.js";
+import { handlerCreateChirp, handlerGetChirps, handlerGetChirp, handlerDeleteChirp } from "./api/chirps.js";
+import { handlerLogin, handlerRefresh, handlerRevoke } from "./api/auth.js";
+import { handlerUserCreate, handlerUserUpdate } from "./api/users.js";
 import { respondWithError } from "./api/json.js";
 import { errorHandler } from "./api/error.js";
 import { config } from "./config.js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
+import { handlerPolkaWebhook } from "./api/polka_webhook.js";
 
 
 
@@ -54,6 +56,13 @@ app.get("/api/chirps/:chirpID", async (req, res, next) => {
         next(error);
     }
 });
+app.delete("/api/chirps/:chirpID", async (req, res, next) => {
+    try {
+        await handlerDeleteChirp(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
 app.post("/api/chirps", async (req, res, next) => {
     try {
         await handlerCreateChirp(req, res);
@@ -68,9 +77,37 @@ app.post("/api/users", async (req, res, next) => {
         next(error);
     }
 });
+app.put("/api/users", async (req, res, next) => {
+    try {
+        await handlerUserUpdate(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
 app.post("/api/login", async (req, res, next) => {
     try {
         await handlerLogin(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
+app.post("/api/refresh", async (req, res, next) => {
+    try {
+        await handlerRefresh(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
+app.post("/api/polka/webhooks", async (req, res, next) => {
+    try {
+        await handlerPolkaWebhook(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
+app.post("/api/revoke", async (req, res, next) => {
+    try {
+        await handlerRevoke(req, res);
     } catch (error) {
         next(error);
     }

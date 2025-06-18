@@ -36,6 +36,20 @@
       "when": 1750068665500,
       "tag": "0004_fresh_pride",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1750162122649,
+      "tag": "0005_left_nextwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1750175532801,
+      "tag": "0006_typical_chamber",
+      "breakpoints": true
     }
   ]
 }

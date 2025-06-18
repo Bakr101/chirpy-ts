@@ -1,9 +1,11 @@
 import type { Request, Response } from "express";
 import { respondWithJson } from "./json.js";
-import { createUser, getUserByEmail } from "../db/queries/users.js";
-import { BadRequestError, UnauthorizedError } from "./error.js";
+import { createUser, updateUser } from "../db/queries/users.js";
+import { BadRequestError } from "./error.js";
+import { getUser } from "../db/queries/users.js";
 import { NewUser } from "../db/schema.js";
-import { checkPasswordHash, hashPassword } from "../auth/auth.js";
+import { getBearerToken, hashPassword, validateJWT } from "../auth/auth.js";
+import { config } from "../config.js";
 
 type UserResponse = Omit<NewUser, "hashedPassword">;
 
@@ -33,34 +35,43 @@ export async function handlerUserCreate(req: Request, res: Response) {
         email: user.email,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
+        isChirpyRed: user.isChirpyRed,
     }
     respondWithJson(res, 201, userResponse);
 }
 
-export async function handlerLogin(req: Request, res: Response) {
-    const params = req.body;
+type UserUpdateParams = {
+    email: string;
+    password: string;
+}
+
+export async function handlerUserUpdate(req: Request, res: Response) {
+    const params: UserUpdateParams = req.body;
     const email = params.email;
     const password = params.password;
+    let hashedPassword = await hashPassword(password)
     if (!email) {
         throw new BadRequestError("Email is required");
     }
     if (!password) {
         throw new BadRequestError("Password is required");
     }
-    const user = await getUserByEmail(email);
-    if (!user) {
-        throw new UnauthorizedError("Invalid email or password");
-    }
-    const isPasswordValid = await checkPasswordHash(password, user.hashedPassword);
-    if (!isPasswordValid) {
-        throw new UnauthorizedError("Invalid email or password");
-    }
-    const userResponse: UserResponse = {
-        id: user.id,
-        email: user.email,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-    }
-    respondWithJson(res, 200, userResponse);
 
+    const token = getBearerToken(req);
+    const userID = validateJWT(token, config.APIConfig.jwtSecret)
+    const user = await getUser(userID)
+
+    const updatedUser = await updateUser(user.id, email, hashedPassword);
+    if (!updatedUser) {
+        throw new Error("Failed to update user");
+    }
+    let response: UserResponse
+    response = {
+        email: updatedUser.email,
+        createdAt: updatedUser.createdAt,
+        updatedAt: updatedUser.updatedAt,
+        id: updatedUser.id,
+        isChirpyRed: updatedUser.isChirpyRed,
+    }
+    respondWithJson(res, 200, updatedUser);
 }
